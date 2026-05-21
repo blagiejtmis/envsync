@@ -47,6 +47,27 @@ func TestEncryptDecryptRoundtrip(t *testing.T) {
 	}
 }
 
+// TestEncryptProducesUniqueNonces verifies that encrypting the same plaintext
+// twice yields different ciphertexts, ensuring a fresh nonce is used each time.
+func TestEncryptProducesUniqueNonces(t *testing.T) {
+	key := crypto.DeriveKey("nonce-test-secret")
+	plaintext := []byte("SAME_CONTENT=true")
+
+	ciphertext1, err := crypto.Encrypt(key, plaintext)
+	if err != nil {
+		t.Fatalf("first encrypt failed: %v", err)
+	}
+
+	ciphertext2, err := crypto.Encrypt(key, plaintext)
+	if err != nil {
+		t.Fatalf("second encrypt failed: %v", err)
+	}
+
+	if bytes.Equal(ciphertext1, ciphertext2) {
+		t.Fatal("two encryptions of the same plaintext should produce different ciphertexts")
+	}
+}
+
 func TestDecryptWithWrongKey(t *testing.T) {
 	key := crypto.DeriveKey("correct-secret")
 	wrongKey := crypto.DeriveKey("wrong-secret")
