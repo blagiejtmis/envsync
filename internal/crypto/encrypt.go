@@ -26,6 +26,9 @@ type DerivedKey struct {
 // DeriveKey derives a 32-byte AES key from passphrase using PBKDF2.
 // If salt is nil, a new random salt is generated.
 func DeriveKey(passphrase string, salt []byte) (*DerivedKey, error) {
+	if passphrase == "" {
+		return nil, errors.New("passphrase must not be empty")
+	}
 	if salt == nil {
 		salt = make([]byte, SaltSize)
 		if _, err := io.ReadFull(rand.Reader, salt); err != nil {
@@ -69,5 +72,9 @@ func Decrypt(key, ciphertext []byte) ([]byte, error) {
 		return nil, errors.New("ciphertext too short")
 	}
 	nonce, data := ciphertext[:nonceSize], ciphertext[nonceSize:]
-	return gcm.Open(nil, nonce, data, nil)
+	plaintext, err := gcm.Open(nil, nonce, data, nil)
+	if err != nil {
+		return nil, errors.New("decryption failed: invalid key or corrupted data")
+	}
+	return plaintext, nil
 }
