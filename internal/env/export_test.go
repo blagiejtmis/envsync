@@ -73,6 +73,16 @@ func TestFprintSortedOrder(t *testing.T) {
 	}
 }
 
+func TestFprintEmptyEntries(t *testing.T) {
+	var sb strings.Builder
+	if err := Fprint(&sb, []Entry{}, FormatRaw); err != nil {
+		t.Fatalf("unexpected error for empty entries: %v", err)
+	}
+	if got := sb.String(); got != "" {
+		t.Errorf("expected empty output for no entries, got %q", got)
+	}
+}
+
 func TestQuoteIfNeeded(t *testing.T) {
 	cases := []struct {
 		input string
