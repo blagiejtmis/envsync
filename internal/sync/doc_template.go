@@ -18,4 +18,11 @@
 //  2. The template is committed to version control.
 //  3. On each push/pull, CheckAgainstTemplate is called automatically and
 //     the result is reported via FprintCheckResult.
+//
+// Template format
+//
+// A .env.template file follows the same KEY=VALUE syntax as a regular .env
+// file, but all values are left empty (e.g. "DB_HOST="). Lines beginning
+// with "#" are treated as comments and are preserved during generation so
+// that documentation for each variable can be maintained alongside the key.
 package sync
