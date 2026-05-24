@@ -73,6 +73,21 @@ func (s *SecretStore) Keys() []string {
 	return keys
 }
 
+// Has reports whether key exists in the store.
+func (s *SecretStore) Has(key string) bool {
+	_, ok := s.entries[key]
+	return ok
+}
+
+// GetEntry returns the full Entry for key, including metadata.
+func (s *SecretStore) GetEntry(key string) (Entry, error) {
+	e, ok := s.entries[key]
+	if !ok {
+		return Entry{}, ErrNotFound
+	}
+	return e, nil
+}
+
 func (s *SecretStore) load() error {
 	data, err := os.ReadFile(s.path)
 	if err != nil {
