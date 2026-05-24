@@ -3,6 +3,7 @@ package env
 import (
 	"fmt"
 	"os"
+	"sort"
 )
 
 // LoadFile reads and parses a .env file from the given path.
@@ -45,12 +46,14 @@ func ToMap(entries []Entry) map[string]string {
 	return m
 }
 
-// FromMap converts a map into a slice of Entries.
-// Note: map iteration order is not guaranteed.
+// FromMap converts a map into a slice of Entries sorted by key for deterministic output.
 func FromMap(m map[string]string) []Entry {
 	entries := make([]Entry, 0, len(m))
 	for k, v := range m {
 		entries = append(entries, Entry{Key: k, Value: v})
 	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
 	return entries
 }
